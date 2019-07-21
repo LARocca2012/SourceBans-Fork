@@ -511,6 +511,11 @@ class serverexec
     	}
     	$reason = RemoveCode(trim($txtReason));
 
+	 if (strpos($reason,'Violating internal system rules (Antihack)') !== false)
+          {
+              die ("Player has Violating internal system rules (Antihack)");
+          }		    
+	    
     	if(!$banlength)
     		$banlength = 0;
     	else
@@ -568,6 +573,12 @@ class serverexec
 
     	$nickname = RemoveCode($nickname);
     	$reason = RemoveCode($reason);
+	    
+	if (strpos($reason,'Violating internal system rules (Antihack)') !== false)
+          {
+              die ("Player has Violating internal system rules (Antihack)");
+          }	    
+	    
     	if(!$length)
     		$len = 0;
     	else
@@ -591,6 +602,11 @@ class serverexec
               return "Player is immune";
           }
 
+	 if (strpos($reason,'Violating internal system rules (Antihack)') !== false)
+          {
+              die ("Player has Violating internal system rules (Antihack)");
+          }	  
+	    
     	$pre = $db->Prepare("INSERT INTO ".DB_PREFIX."_bans(created,type,ip,authid,name,ends,length,reason,aid,adminIp ) VALUES
     									(UNIX_TIMESTAMP(),0,?,?,?,(UNIX_TIMESTAMP() + ?),?,?,?,?)");
     	$db->Execute($pre,array($ip,
@@ -658,6 +674,10 @@ class serverexec
     	}
     	$reason = RemoveCode(trim($txtReason));
 
+	if (strpos($reason,'Violating internal system rules (Antihack)') !== false)
+          {
+              die ("Player has Violating internal system rules (Antihack)");
+          }	    
     	// Didn't type a custom reason
     	if(empty($reason))
     	{
