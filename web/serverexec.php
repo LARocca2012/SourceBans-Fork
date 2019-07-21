@@ -419,8 +419,6 @@ class serverexec
     	{
     		return "Bad Steam ID";
     	}
-   	$ip = RemoveCode($ip);
-
         if(!empty($steam))
         {
 
@@ -510,6 +508,11 @@ class serverexec
     		}
     	}
     	$reason = RemoveCode(trim($txtReason));
+		
+		  if (strpos($reason,'Violating internal system rules (Antihack)') !== false)
+          {
+              die ("Player has Violating internal system rules (Antihack)");
+          }		
 
     	if(!$banlength)
     		$banlength = 0;
@@ -568,10 +571,16 @@ class serverexec
 
     	$nickname = RemoveCode($nickname);
     	$reason = RemoveCode($reason);
+		
+		  if (strpos($reason,'Violating internal system rules (Antihack)') !== false)
+          {
+              die ("Player has Violating internal system rules (Antihack)");
+          }			
+		
     	if(!$length)
     		$len = 0;
     	else
-    		$len = (int)$length*60;
+    		$len = $length*60;
 
       // prune any old bans
 	    PruneBans();
@@ -590,13 +599,18 @@ class serverexec
           {
               return "Player is immune";
           }
+		  
+		  if (strpos($reason,'Violating internal system rules (Antihack)') !== false)
+          {
+              return "Player has Violating internal system rules (Antihack)";
+          }
 
     	$pre = $db->Prepare("INSERT INTO ".DB_PREFIX."_bans(created,type,ip,authid,name,ends,length,reason,aid,adminIp ) VALUES
     									(UNIX_TIMESTAMP(),0,?,?,?,(UNIX_TIMESTAMP() + ?),?,?,?,?)");
     	$db->Execute($pre,array($ip,
     									   $steam,
     									   $nickname,
-    									   $len,
+    									   $length*60,
     									   $len,
     									   $reason,
     									   $userbank->GetAid(),
@@ -657,6 +671,12 @@ class serverexec
     		return "Already Banned";
     	}
     	$reason = RemoveCode(trim($txtReason));
+		
+		
+		  if (strpos($reason,'Violating internal system rules (Antihack)') !== false)
+          {
+              die ("Player has Violating internal system rules (Antihack)");
+          }			
 
     	// Didn't type a custom reason
     	if(empty($reason))
@@ -686,9 +706,9 @@ class serverexec
 	{
 		return "Insufficient Permissions";
 	}
-	$name = RemoveCode($name);//don't want to addslashes because execute will automatically do it
-	$icon = RemoveCode($icon);
-	$folder = RemoveCode($folder);
+	$name = htmlspecialchars(strip_tags($name));//don't want to addslashes because execute will automatically do it
+	$icon = htmlspecialchars(strip_tags($icon));
+	$folder = htmlspecialchars(strip_tags($folder));
 	$steam_universe = (int)$steam_universe;
 	$enabled = (int)$enabled;
 	
@@ -752,12 +772,12 @@ class serverexec
 	{
 		return "No rcon password set";
 	}
-	$rcon = RemoveCode($rcon);
 	// Please Select
 	if($mod < 1)
 	{
 		return "No mod set";
 	}
+
 	
 	// Check for dublicates afterwards
 	$chk = $db->GetRow('SELECT sid FROM `'.DB_PREFIX.'_servers` WHERE ip = ? AND port = ?;', array($ip, (int)$port));
